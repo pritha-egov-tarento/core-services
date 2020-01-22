@@ -1,42 +1,24 @@
 package org.egov.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.ReportApp;
-import org.egov.common.contract.request.RequestInfo;
 import org.egov.domain.model.MetaDataRequest;
 import org.egov.domain.model.ReportDefinitions;
-import org.egov.report.repository.builder.ReportQueryBuilder;
 import org.egov.report.service.ReportService;
 import org.egov.swagger.model.MetadataResponse;
-import org.egov.swagger.model.ReportDataResponse;
 import org.egov.swagger.model.ReportRequest;
 import org.egov.swagger.model.ReportResponse;
 import org.egov.tracer.model.CustomException;
-import org.postgresql.util.PSQLException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -71,15 +53,8 @@ public class ReportController {
             MetadataResponse mdr = reportService.getMetaData(metaDataRequest, moduleName);
             return reportService.getSuccessResponse(mdr, metaDataRequest.getRequestInfo(), metaDataRequest.getTenantId());
         } catch (CustomException ex) {
-            if (ex.getCode().equals("INVALID_TYPE_OF_SOURCE_COLUMN")) {
-                throw new CustomException("INVALID_REPORT_CONFIG", "Type parameter in report definition is invalid for source column");
-            } else if (ex.getCode().equals("INVALID_TYPE_OF_SEARCH_PARAM")) {
-                throw new CustomException("INVALID_REPORT_CONFIG", "Type parameter in report definition is invalid for search param");
-            } else if (ex.getCode().equals("REPORT_CONFIG_ERROR")) {
-                throw new CustomException("REPORT_CONFIG_ERROR", "Error retrieving report definitions");
-            } else {
-                return reportService.getFailureResponse(metaDataRequest.getRequestInfo(), metaDataRequest.getTenantId());
-            }
+            log.error("Report config invalid", ex);
+            throw ex;
         } catch (Exception e) {
             log.error("ERROR IN GETTING METADATA", e);
             throw new CustomException("ERROR_IN_GETTING_METADATA", e.getMessage());
