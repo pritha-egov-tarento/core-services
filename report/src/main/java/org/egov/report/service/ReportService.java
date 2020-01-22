@@ -1,9 +1,5 @@
 package org.egov.report.service;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.ReportApp;
 import org.egov.common.contract.request.RequestInfo;
@@ -12,25 +8,19 @@ import org.egov.domain.model.MetaDataRequest;
 import org.egov.domain.model.ReportDefinitions;
 import org.egov.domain.model.Response;
 import org.egov.report.repository.ReportRepository;
-import org.egov.swagger.model.ColumnDetail;
+import org.egov.swagger.model.*;
 import org.egov.swagger.model.ColumnDetail.TypeEnum;
-import org.egov.swagger.model.MetadataResponse;
-import org.egov.swagger.model.ReportDataResponse;
-import org.egov.swagger.model.ReportDefinition;
-import org.egov.swagger.model.ReportMetadata;
-import org.egov.swagger.model.ReportRequest;
-import org.egov.swagger.model.ReportResponse;
-import org.egov.swagger.model.SearchColumn;
-import org.egov.swagger.model.SourceColumn;
-
 import org.egov.tracer.model.CustomException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,12 +35,12 @@ public class ReportService {
     @Autowired
     private IntegrationService integrationService;
 
-    //map to store metadata with <reportname,modulename> as key
-    public static Map<Pair<String, String>, MetadataResponse> metaResponseCache = new HashMap<>();
+    //map to store metadata with <reportname+modulename> as key
+    public static Map<String, MetadataResponse> metaResponseCache = new HashMap<>();
 
 
     public MetadataResponse getMetaData(MetaDataRequest metaDataRequest, String moduleName) throws CustomException {
-        Pair<String, String> reportName = new Pair<>(metaDataRequest.getReportName(), moduleName);
+        String reportName = metaDataRequest.getReportName().concat(moduleName);
         try {
             if (metaResponseCache.containsKey(reportName)) {
                 return metaResponseCache.get(reportName);
