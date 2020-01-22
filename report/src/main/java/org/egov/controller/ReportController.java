@@ -10,7 +10,6 @@ import org.egov.swagger.model.ReportRequest;
 import org.egov.swagger.model.ReportResponse;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,10 +38,6 @@ public class ReportController {
 
     @Autowired
     public static ResourceLoader resourceLoader;
-
-    //max number of times which a specific report can fail before getting disabled
-    @Value(("${report.count.to.disable}"))
-    private int reportDisableCount;
 
     @PostMapping("/{moduleName}/metadata/_get")
     @ResponseBody
