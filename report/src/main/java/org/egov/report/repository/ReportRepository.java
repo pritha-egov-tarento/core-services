@@ -1,27 +1,20 @@
 package org.egov.report.repository;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 import org.egov.report.repository.builder.ReportQueryBuilder;
 import org.egov.swagger.model.ReportDefinition;
 import org.egov.swagger.model.ReportRequest;
 import org.egov.tracer.model.CustomException;
 import org.postgresql.util.PSQLException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.validation.constraints.Null;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -36,8 +29,8 @@ public class ReportRepository {
     @Value("${max.sql.execution.time.millisec:45000}")
     private Long maxExecutionTime;
 
-    @Value(("${report.timeout.for.query:15}"))
-    private int queryExecutionTimeout;
+    @Value(("${report.timeout.for.query}"))
+    public int queryExecutionTimeout;
 
 
     public List<Map<String, Object>> getData(ReportRequest reportRequest, ReportDefinition reportDefinition, String authToken) throws CustomException {
